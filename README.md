@@ -2,7 +2,7 @@
 
 A vulnerable Spring Boot application demonstrating CVE-2022-22963, a critical Remote Code Execution vulnerability in Spring Cloud Function versions 3.0.0 through 3.2.2.
 
-It has logic in place to show the contents of /tmp inside the container browsable to allow you to write command outputs or files to /tmp and view the output easily at http://localhost:8080/results
+It has logic in place to show the contents of /tmp inside the container browsable to allow you to write command outputs or files to /tmp and view the output easily at http://localhost:8080/result
 
 ## What is CVE-2022-22963?
 
@@ -43,7 +43,7 @@ curl -X POST http://127.0.0.1:8080/functionRouter \
   --data 'Never gonna give you up'
 ```
 
-**Note:** Check the http://localhost:8080/results page and you should see a whoami.txt file you can open to see the results
+**Note:** Check the http://localhost:8080/result page and you should see a whoami.txt file you can open to see the results
 
 ### 2. Show Processes
 
@@ -53,7 +53,7 @@ curl -X POST http://127.0.0.1:8080/functionRouter \
   -d 'Never gonna let you down'
 ```
 
-**Note:** Check the http://localhost:8080/results page and you should see a ps.txt file you can open to see the results
+**Note:** Check the http://localhost:8080/result page and you should see a ps.txt file you can open to see the results
 
 ### 3. Reverse Shell
 
