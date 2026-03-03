@@ -5,8 +5,7 @@ COPY pom.xml .
 COPY src ./src
 RUN mvn clean package -DskipTests
 
-# Run stage
-# Equivilent of eclipse-temurin
+# Run stage - Equivilent of eclipse-temurin
 FROM cgr.dev/chainguard/jre:latest
 WORKDIR /app
 

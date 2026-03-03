@@ -59,3 +59,27 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Extract metadata for Chainguard image (tags, labels)
+        id: meta-chainguard
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch,suffix=-chainguard
+            type=ref,event=pr,suffix=-chainguard
+            type=semver,pattern={{version}},suffix=-chainguard
+            type=semver,pattern={{major}}.{{minor}},suffix=-chainguard
+            type=sha,prefix={{branch}}-,suffix=-chainguard
+            type=raw,value=latest-chainguard,enable={{is_default_branch}}
+
+      - name: Build and push Chainguard Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile.chainguard
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta-chainguard.outputs.tags }}
+          labels: ${{ steps.meta-chainguard.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
