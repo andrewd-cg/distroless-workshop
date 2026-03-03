@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vuln-app-chainguard
+  namespace: distroless-workshop
+  labels:
+    app: vuln-app-chainguards
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vuln-app-chainguard
+  template:
+    metadata:
+      labels:
+        app: vuln-app-chainguard
+    spec:
+      containers:
+      - name: vuln-app-chainguard
+        image: ghcr.io/andrewd-cg/distroless-workshop:latest-chainguard
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vuln-app-chainguard
+  namespace: distroless-workshop
+  labels:
+    app: vuln-app-chainguard
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 8080
+    protocol: TCP
+    name: http
+  selector:
+    app: vuln-app-chainguard

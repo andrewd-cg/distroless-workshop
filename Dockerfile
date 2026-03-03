@@ -7,6 +7,9 @@ RUN mvn clean package -DskipTests
 
 # Run stage
 FROM eclipse-temurin:latest
+
+RUN apt-get update && apt-get install curl wget -y
+
 WORKDIR /app
 
 COPY --from=build /app/target/vuln-app-1.0.0.jar app.jar
