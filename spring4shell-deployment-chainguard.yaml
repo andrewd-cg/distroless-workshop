@@ -18,6 +18,7 @@ spec:
       containers:
       - name: vuln-app-chainguard
         image: ghcr.io/andrewd-cg/distroless-workshop:latest-chainguard
+        imagePullPolicy: Always
         ports:
         - containerPort: 8080
           name: http
